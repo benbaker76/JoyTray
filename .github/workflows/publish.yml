@@ -1,0 +1,61 @@
+name: Build & Release
+
+on:
+  push:
+    branches: [ master ]
+
+permissions:
+  contents: write      # to create the GitHub Release
+  packages: read
+
+jobs:
+  release:
+    runs-on: windows-latest
+    env:
+      APP_NAME: JoyTray
+      ARTIFACT_ROOT: publish
+      CONFIGURATION: Release
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1
+
+      - name: Get version from .rc file
+        id: get-version
+        uses: michmich112/extract-version@main
+        with:
+          version-file: "${{ env.APP_NAME }}/${{ env.APP_NAME }}.rc"
+          schema: major.minor.patch
+
+      - name: Build solution
+        run: |
+          msbuild ${{ env.APP_NAME }}.sln /p:Configuration=${{ env.CONFIGURATION }}
+
+      - name: Prepare artifacts
+        run: |
+          md "%ARTIFACT_ROOT%\%APP_NAME%"
+          copy "%APP_NAME%\bin\%CONFIGURATION%\%APP_NAME%.exe" "%ARTIFACT_ROOT%\%APP_NAME%\"
+
+      - name: Copy data files and docs
+        shell: pwsh
+        run: |
+          Copy-Item Data\* -Destination "${{ env.ARTIFACT_ROOT }}\${{ env.APP_NAME }}" -Recurse -Force
+          Copy-Item README.md, LICENSE -Destination "${{ env.ARTIFACT_ROOT }}\${{ env.APP_NAME }}" -Force
+
+      - name: Build Inno Setup installer
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.6
+        with:
+          path: "${{ env.ARTIFACT_ROOT }}/${{ env.APP_NAME }}/${{ env.APP_NAME }}.iss"
+          options: "/O+ /DAppVersion=${{ steps.get-version.outputs.version }}"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.get-version.outputs.version }}
+          name: Release ${{ steps.get-version.outputs.version }}
+          files: "${{ env.ARTIFACT_ROOT }}/${{ env.APP_NAME }}/Setup/${{ env.APP_NAME }}Setup.exe"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

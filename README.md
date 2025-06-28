@@ -4,7 +4,7 @@
 
 A Windows tray application that supports both the Ultimarc ServoStik and UltraStik 360
 
-![](/images/ultrastik.png)
+![](/.github/img/UltraStik.png)
 
 Running JoyTray from command line:
 ```
