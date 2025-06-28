@@ -28,7 +28,7 @@ jobs:
         uses: michmich112/extract-version@main
         with:
           version-file: "${{ env.APP_NAME }}/${{ env.APP_NAME }}.rc"
-          schema: major.minor.patch
+          schema: major.minor.build.revision
 
       - name: Build solution
         run: |
