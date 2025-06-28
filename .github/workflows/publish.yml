@@ -47,10 +47,11 @@ jobs:
       - name: Prepare artifacts
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path "$env:ARTIFACT_ROOT\$env:APP_NAME"
+          $dest = "$env:ARTIFACT_ROOT\$env:APP_NAME"
+          New-Item -ItemType Directory -Force -Path $dest | Out-Null
           Copy-Item `
-            -Path "$env:CONFIGURATION\$env:APP_NAME.exe" `
-            -Destination "$env:ARTIFACT_ROOT\$env:APP_NAME" `
+            -Path "$env:APP_NAME\$env:CONFIGURATION\$env:APP_NAME.exe" `
+            -Destination $dest `
             -Force
 
       - name: Copy data files and docs
