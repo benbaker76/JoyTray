@@ -16,14 +16,12 @@ WizardSmallImageFile=WizardSmallImage.bmp
 
 [Files]
 Source: "JoyTray.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "JoyTray.ini"; DestDir: "{app}"; Flags: ignoreversion
 Source: "UltraStik.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "libusb0.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "PacDrive.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 [UninstallDelete]
 Type: files; Name: "{app}\JoyTray.exe"
-Type: files; Name: "{app}\JoyTray.ini"
 Type: files; Name: "{app}\UltraStik.dll"
 Type: files; Name: "{app}\libusb0.dll"
 
